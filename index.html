@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your Name – Game Developer</title>
+<meta name="description" content="Games by Your Name. Play them right here in your browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Pixelify+Sans:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #d9e6f7;
+    --ink: #161a3a;
+    --panel: #ffffff;
+    --coin: #ffc93c;
+    --blue: #4b5bff;
+    --muted: #4a5078;
+    --display: "Pixelify Sans", "Courier New", monospace;
+    --body: "Atkinson Hyperlegible", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --sky: #14173a; --ink: #e8ebff; --panel: #1f2350; --muted: #aab0e0; }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--sky); color: var(--ink); font: 1.05rem/1.6 var(--body); }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 1.25rem; }
+
+  header { padding: 1rem 0; }
+  nav { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+  nav .logo { font-family: var(--display); font-weight: 700; font-size: 1.3rem; text-decoration: none; }
+  nav ul { display: flex; gap: 1.25rem; list-style: none; margin: 0; padding: 0; }
+
+  .hero { padding: 3.5rem 0 3rem; }
+  h1 { font-family: var(--display); font-weight: 700; font-size: clamp(2.4rem, 8vw, 5rem); line-height: 1.05; margin: 0 0 1rem; max-width: 14ch; }
+  .hero p { max-width: 46ch; color: var(--muted); margin: 0 0 1.5rem; }
+
+  .btn { display: inline-block; font: 700 1rem var(--body); padding: .65rem 1.1rem; border: 2px solid var(--ink); border-radius: 10px; background: var(--coin); color: #161a3a; text-decoration: none; cursor: pointer; box-shadow: 3px 3px 0 var(--ink); }
+  .btn:hover { transform: translate(1px, 1px); box-shadow: 2px 2px 0 var(--ink); }
+  .btn.alt { background: var(--panel); color: var(--ink); }
+
+  h2 { font-family: var(--display); font-size: 2rem; margin: 0 0 1.25rem; }
+  .games { padding: 2rem 0 3rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1.5rem; }
+  .card { background: var(--panel); border: 2px solid var(--ink); border-radius: 14px; box-shadow: 5px 5px 0 var(--ink); overflow: hidden; display: flex; flex-direction: column; }
+  .thumb { aspect-ratio: 16 / 9; display: grid; place-items: center; font: 700 3rem var(--display); color: #fff; position: relative; }
+  .thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .card-body { padding: 1rem 1.1rem 1.2rem; display: flex; flex-direction: column; gap: .6rem; flex: 1; }
+  .card h3 { font: 700 1.35rem var(--display); margin: 0; }
+  .meta { font-size: .9rem; color: var(--muted); margin: 0; }
+  .card p.blurb { margin: 0; flex: 1; }
+  .actions { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: .4rem; }
+  .actions .btn { padding: .45rem .85rem; font-size: .95rem; }
+
+  .about { padding: 2rem 0 4rem; }
+  .about p { max-width: 60ch; margin: 0 0 1rem; }
+  .links { display: flex; gap: .8rem; flex-wrap: wrap; }
+  footer { padding: 1.5rem 0 2.5rem; color: var(--muted); font-size: .9rem; }
+
+  /* Player overlay */
+  #player { position: fixed; inset: 0; background: rgba(10, 12, 30, .88); display: none; flex-direction: column; padding: 1rem; z-index: 10; }
+  #player.open { display: flex; }
+  .bar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; color: #fff; padding-bottom: .75rem; flex-wrap: wrap; }
+  .bar strong { font: 700 1.25rem var(--display); }
+  .bar .actions { margin: 0; }
+  #frame { flex: 1; width: 100%; border: 2px solid #fff; border-radius: 10px; background: #000; }
+
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .btn:hover { transform: none; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <a class="logo" href="#top">Your Name</a>
+      <ul>
+        <li><a href="#games">Games</a></li>
+        <li><a href="#about">About</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero wrap">
+    <h1>I make games you can play right here.</h1>
+    <p>Pick a game below. Each one runs in your browser with nothing to download.</p>
+    <button class="btn" id="play-latest" type="button">Play my latest game</button>
+  </section>
+
+  <section class="games wrap" id="games">
+    <h2>Games</h2>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section class="about wrap" id="about">
+    <h2>About me</h2>
+    <p>Write two or three sentences here: what you make, which tools you use, and what you’re learning next.</p>
+    <div class="links">
+      <a class="btn alt" href="https://github.com/your-username">GitHub</a>
+      <a class="btn alt" href="https://your-username.itch.io">itch.io</a>
+      <a class="btn alt" href="mailto:you@example.com">Email me</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">© <span id="year"></span> Your Name</div>
+</footer>
+
+<div id="player" role="dialog" aria-modal="true" aria-labelledby="player-title">
+  <div class="bar">
+    <strong id="player-title">Game</strong>
+    <div class="actions">
+      <a class="btn alt" id="newtab" href="#" target="_blank" rel="noopener">Open in new tab</a>
+      <button class="btn alt" id="fs" type="button">Fullscreen</button>
+      <button class="btn" id="close" type="button">Close</button>
+    </div>
+  </div>
+  <iframe id="frame" title="Game" allow="fullscreen; gamepad; autoplay; clipboard-write" allowfullscreen></iframe>
+</div>
+
+<script>
+  // ADD YOUR GAMES HERE. Each "path" points to the exported web build's index.html.
+  const games = [
+    {
+      title: "Game One",
+      engine: "Godot 4",
+      year: 2026,
+      blurb: "A one-line pitch for the game. Say what the player does.",
+      path: "games/game-one/index.html",
+      thumb: "games/game-one/thumb.png",   // optional 16:9 screenshot
+      source: "https://github.com/your-username/game-one",  // optional
+      color: "#4b5bff"
+    },
+    {
+      title: "Game Two",
+      engine: "Unity",
+      year: 2025,
+      blurb: "Another short description. Mention controls if they aren’t obvious.",
+      path: "games/game-two/index.html",
+      thumb: "games/game-two/thumb.png",
+      color: "#e5484d"
+    },
+    {
+      title: "Game Three",
+      engine: "JavaScript",
+      year: 2025,
+      blurb: "A game jam entry, a prototype, or anything you’re proud of.",
+      path: "games/game-three/index.html",
+      thumb: "games/game-three/thumb.png",
+      color: "#12a594"
+    }
+  ];
+
+  const grid = document.getElementById("grid");
+  const player = document.getElementById("player");
+  const frame = document.getElementById("frame");
+  let lastFocus = null;
+
+  games.forEach((g, i) => {
+    const card = document.createElement("article");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="thumb" style="background:${g.color}">
+        <span aria-hidden="true">${g.title[0]}</span>
+        ${g.thumb ? `<img src="${g.thumb}" alt="" loading="lazy" onerror="this.remove()">` : ""}
+      </div>
+      <div class="card-body">
+        <h3>${g.title}</h3>
+        <p class="meta">${g.engine} · ${g.year}</p>
+        <p class="blurb">${g.blurb}</p>
+        <div class="actions">
+          <button class="btn" type="button" data-i="${i}">Play in browser</button>
+          ${g.source ? `<a class="btn alt" href="${g.source}">Source code</a>` : ""}
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+
+  function openGame(i) {
+    const g = games[i];
+    lastFocus = document.activeElement;
+    document.getElementById("player-title").textContent = g.title;
+    document.getElementById("newtab").href = g.path;
+    frame.title = g.title;
+    frame.src = g.path;
+    player.classList.add("open");
+    document.getElementById("close").focus();
+  }
+
+  function closeGame() {
+    player.classList.remove("open");
+    frame.src = "about:blank"; // stops the game and its audio
+    if (lastFocus) lastFocus.focus();
+  }
+
+  grid.addEventListener("click", e => {
+    const b = e.target.closest("button[data-i]");
+    if (b) openGame(+b.dataset.i);
+  });
+  document.getElementById("play-latest").addEventListener("click", () => openGame(0));
+  document.getElementById("close").addEventListener("click", closeGame);
+  document.getElementById("fs").addEventListener("click", () => {
+    if (frame.requestFullscreen) frame.requestFullscreen();
+  });
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && player.classList.contains("open") && !document.fullscreenElement) closeGame();
+  });
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
